@@ -59,6 +59,7 @@ var ScrollSpy = (function ($) {
     LI: 'li',
     LI_DROPDOWN: 'li.dropdown',
     NAV_LINKS: '.nav-link',
+    NAV_ITEMS: '.nav-item',
     DROPDOWN: '.dropdown',
     DROPDOWN_ITEMS: '.dropdown-item',
     DROPDOWN_TOGGLE: '.dropdown-toggle'
@@ -243,7 +244,8 @@ var ScrollSpy = (function ($) {
         } else {
           // todo (fat) this is kinda sus…
           // recursively add actives to tested nav-links
-          $link.parents(Selector.LI).find(Selector.NAV_LINKS).addClass(ClassName.ACTIVE);
+          $link.addClass(ClassName.ACTIVE);
+          $link.parents(Selector.NAV_ITEMS).children(Selector.NAV_LINKS).addClass(ClassName.ACTIVE);
         }
 
         $(this._scrollElement).trigger(Event.ACTIVATE, {
