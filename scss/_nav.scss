@@ -32,6 +32,11 @@
 // Nav inline
 
 .nav-inline {
+  .nav-item {
+    display: inline-block;
+  }
+
+  .nav-item + .nav-item,
   .nav-link + .nav-link {
     margin-left: 1rem;
   }
@@ -52,14 +57,14 @@
     margin-bottom: -1px;
 
     + .nav-item {
-      margin-left: .2rem;
+      margin-left: $nav-item-margin;
     }
   }
 
   .nav-link {
     display: block;
     padding: $nav-link-padding;
-    border: 1px solid transparent;
+    border: $nav-tabs-link-border-width solid transparent;
     @include border-radius($border-radius $border-radius 0 0);
 
     @include hover-focus {
@@ -97,7 +102,7 @@
     float: left;
 
     + .nav-item {
-      margin-left: .2rem;
+      margin-left: $nav-item-margin;
     }
   }
 
@@ -123,7 +128,7 @@
     float: none;
 
     + .nav-item {
-      margin-top: .2rem;
+      margin-top: $nav-item-margin;
       margin-left: 0;
     }
   }

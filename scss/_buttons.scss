@@ -10,7 +10,7 @@
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
-  border: $border-width solid transparent;
+  border: $input-btn-border-width solid transparent;
   @include button-size($btn-padding-y, $btn-padding-x, $font-size-base, $line-height, $btn-border-radius);
   @include transition(all .2s ease-in-out);
 
@@ -160,7 +160,7 @@ fieldset[disabled] a.btn {
 
 // Vertically space out multiple block buttons
 .btn-block + .btn-block {
-  margin-top: 5px;
+  margin-top: $btn-block-spacing-y;
 }
 
 // Specificity overrides

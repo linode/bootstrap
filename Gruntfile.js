@@ -21,23 +21,8 @@ module.exports = function (grunt) {
   var isTravis = require('is-travis');
   var npmShrinkwrap = require('npm-shrinkwrap');
   var mq4HoverShim = require('mq4-hover-shim');
-  var autoprefixer = require('autoprefixer')({
-    browsers: [
-      'Android 2.3',
-      'Android >= 4',
-      'Chrome >= 35',
-      'Firefox >= 31',
-      // Note: Edge versions in Autoprefixer & Can I Use refer to the EdgeHTML rendering engine version,
-      // NOT the Edge app version shown in Edge's "About" screen.
-      // For example, at the time of writing, Edge 20 on an up-to-date system uses EdgeHTML 12.
-      // See also https://github.com/Fyrd/caniuse/issues/1928
-      'Edge >= 12',
-      'Explorer >= 9',
-      'iOS >= 7',
-      'Opera >= 12',
-      'Safari >= 7.1'
-    ]
-  });
+  var autoprefixerSettings = require('./grunt/autoprefixer-settings.js');
+  var autoprefixer = require('autoprefixer')(autoprefixerSettings);
 
   var generateCommonJSModule = require('./grunt/bs-commonjs-generator.js');
   var configBridge = grunt.file.readJSON('./grunt/configBridge.json', { encoding: 'utf8' });
@@ -270,7 +255,7 @@ module.exports = function (grunt) {
         compatibility: 'ie9',
         keepSpecialComments: '*',
         sourceMap: true,
-        noAdvanced: true
+        advanced: false
       },
       core: {
         files: [
@@ -374,17 +359,6 @@ module.exports = function (grunt) {
       }
     },
 
-    sed: {
-      versionNumber: {
-        pattern: (function () {
-          var old = grunt.option('oldver');
-          return old ? RegExp.quote(old) : old;
-        })(),
-        replacement: grunt.option('newver'),
-        recursive: true
-      }
-    },
-
     'saucelabs-qunit': {
       all: {
         options: {
@@ -417,7 +391,27 @@ module.exports = function (grunt) {
           branch: 'gh-pages'
         }
       }
+    },
+
+    compress: {
+      main: {
+        options: {
+          archive: 'bootstrap-<%= pkg.version %>-dist.zip',
+          mode: 'zip',
+          level: 9,
+          pretty: true
+        },
+        files: [
+          {
+            expand: true,
+            cwd: 'dist/',
+            src: ['**'],
+            dest: 'bootstrap-<%= pkg.version %>-dist'
+          }
+        ]
+      }
     }
+
   });
 
 
@@ -486,11 +480,6 @@ module.exports = function (grunt) {
   // Default task.
   grunt.registerTask('default', ['clean:dist', 'test']);
 
-  // Version numbering task.
-  // grunt change-version-number --oldver=A.B.C --newver=X.Y.Z
-  // This can be overzealous, so its changes should always be manually reviewed!
-  grunt.registerTask('change-version-number', 'sed');
-
   grunt.registerTask('commonjs', ['babel:umd', 'npm-js']);
 
   grunt.registerTask('npm-js', 'Generate npm-js entrypoint module in dist dir.', function () {
@@ -506,8 +495,9 @@ module.exports = function (grunt) {
   grunt.registerTask('docs-js', ['uglify:docsJs']);
   grunt.registerTask('lint-docs-js', ['jscs:assets']);
   grunt.registerTask('docs', ['docs-css', 'docs-js', 'lint-docs-js', 'clean:docs', 'copy:docs']);
+  grunt.registerTask('docs-github', ['jekyll:github']);
 
-  grunt.registerTask('prep-release', ['dist', 'docs', 'jekyll:github', 'htmlmin', 'compress']);
+  grunt.registerTask('prep-release', ['dist', 'docs', 'docs-github', 'compress']);
 
   // Publish to GitHub
   grunt.registerTask('publish', ['buildcontrol:pages']);
